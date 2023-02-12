@@ -21,7 +21,18 @@ function App() {
       let row = [];
       for (let j = 0; j < count; j++) {
         // setState({...state,grid:[...grid]})
-        row[j] = { off: { x: i, y: j }, isMine: false, isVisible: false };
+        row[j] = {
+          off: { x: i, y: j },
+          isMine: false,
+          isVisible: false,
+          content: function (actualGrid) {
+            return this.isMine ? (
+              <GiBoltBomb size="1.5em" />
+            ) : (
+              getNumber(actualGrid, this.off.x, this.off.y)
+            );
+          },
+        };
       }
       arr.push(row);
     }
@@ -31,10 +42,36 @@ function App() {
       start: true,
     });
   };
+  const handlePropagation = (startX, startY,step=1) => {
+    console.log(`handlePropagation(startX:${startX}, startY:${startY})`);
+    let theGrid = state.grid;
+    let actualRow = state.grid[startX];
+    let isEmpty = false;
+    let [runerX, runerY] = [startX, startY + step];
+    while (!isEmpty && runerX < theGrid.length && runerY < actualRow.length) {
+      console.log("while");
+      let theCaze = theGrid[runerX][runerY];
+      console.log(`theCaze: ${theCaze}`);
+      console.log(theCaze);
+      if (!theCaze.isMine && !theCaze.isVisible) {
+        theCaze.isVisible = true;
+        handlePropagation(runerX, runerY);
+        handlePropagation(runerX, runerY,-1);
+      }
+      isEmpty = theCaze.content(theGrid) == "" || theCaze.isMine;
+      runerX += step;
+      runerY += step;
+      actualRow = state.grid[runerX];
+    }
+    setState({ ...state, grid: theGrid });
+  };
   const handleClickCaze = (offX, OffY) => {
     let actualGrid = state.grid;
     // actualGrid[offX][OffY].isMine = !actualGrid[offX][OffY].isMine;
     actualGrid[offX][OffY].isVisible = true;
+    // change visible to true for voisins with no content
+    handlePropagation(offX, OffY);
+    handlePropagation(offX, OffY,-1);
     setState({
       ...state,
       grid: [...actualGrid],
@@ -47,8 +84,9 @@ function App() {
         {!state.grid.length ? (
           <>
             <div className="row">
-              {state.levels.map((level) => (
+              {state.levels.map((level, index) => (
                 <button
+                  key={index}
                   className="btn btn-info"
                   onClick={() => buildGrid(level.mines)}
                 >
@@ -59,29 +97,38 @@ function App() {
           </>
         ) : (
           <>
-            {state.grid.map((row) => (
-              <p className="gridRow">
-                {row.map((caze) => (
-                  <span
-                    className={
-                      !caze.isVisible
-                        ? "case"
-                        : caze.isMine
-                        ? "case cazeKO"
-                        : "case caseOK"
-                    }
-                    onClick={() => handleClickCaze(caze.off.x, caze.off.y)}
-                  >
-                    {!caze.isVisible ? (
-                      ""
-                    ) : !caze.isMine ? (
-                      getNumber(state.grid, caze.off.x, caze.off.y)
-                    ) : (
-                      <GiBoltBomb size="1.5em" />
-                    )}
-                  </span>
-                ))}
-              </p>
+            {state.grid.map((row, index) => (
+              <>
+                {index == 0 ? (
+                  <>
+                    <p key={index} className="gridRow">
+                    <span className="case gridAXES">#</span>
+                      {row.map((caze, cazeIndex) => (
+                        <span className="case gridAXES">{cazeIndex}</span>
+                      ))}
+                    </p>
+                  </>
+                ) : null}
+
+                <p key={index} className="gridRow">
+                  <span className="case gridAXES">{index}</span>
+                  {row.map((caze, cazeIndex) => (
+                    <span
+                      key={cazeIndex}
+                      className={
+                        !caze.isVisible
+                          ? "case"
+                          : caze.isMine
+                          ? "case cazeKO"
+                          : "case caseOK"
+                      }
+                      onClick={() => handleClickCaze(caze.off.x, caze.off.y)}
+                    >
+                      {!caze.isVisible ? "" : caze.content(state.grid)}
+                    </span>
+                  ))}
+                </p>
+              </>
             ))}
           </>
         )}

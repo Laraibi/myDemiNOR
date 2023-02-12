@@ -60,18 +60,28 @@ export function generateMinesFrench(grid, count) {
 
 
 export const getNumber = (grid, x, y) => {
-    let theCount = grid[x][y].isMine ? -1 : 0;
-    theCount += grid[x].slice(y - 1, y + 1).filter((caze) => caze.isMine).length
+    // console.log('getNumber Function')
+    // console.log(`grid:${JSON.stringify(grid)}`)
+    // console.log(`x:${x}`)
+    // console.log(`y:${y}`)
+    // let theCount = grid[x][y].isMine ? 0 : 0;
+    let theCount = 0;
+    let square = [grid[x].slice(y - 1, y + 2)]
+    theCount += grid[x].slice(y - 1, y + 2).filter((caze) => caze.isMine).length
     if (x > 0) {
         if (y != 0 || y < grid[x].length - 1) {
-            theCount += grid[x - 1].slice(y - 1, y + 1).filter((caze) => caze.isMine).length
+            theCount += grid[x - 1].slice(y - 1, y + 2).filter((caze) => caze.isMine).length
+            square.push(grid[x - 1].slice(y - 1, y + 2))
         }
     }
     if (x < grid.length - 1) {
         if (y != 0 || y < grid[x].length - 1) {
-            theCount += grid[x + 1].slice(y - 1, y + 1).filter((caze) => caze.isMine).length
+            theCount += grid[x + 1].slice(y - 1, y + 2).filter((caze) => caze.isMine).length
+            square.push(grid[x + 1].slice(y - 1, y + 2))
         }
     }
+    console.log(`squareOF: {x: ${x}, y: ${y}}`)
+    console.log(square)
     return theCount > 0 ? theCount : ""
 }
 
