@@ -42,7 +42,7 @@ function App() {
       start: true,
     });
   };
-  const handlePropagation = (startX, startY,step=1) => {
+  const handlePropagation = (startX, startY, step = 1) => {
     console.log(`handlePropagation(startX:${startX}, startY:${startY})`);
     let theGrid = state.grid;
     let actualRow = state.grid[startX];
@@ -56,7 +56,7 @@ function App() {
       if (!theCaze.isMine && !theCaze.isVisible) {
         theCaze.isVisible = true;
         handlePropagation(runerX, runerY);
-        handlePropagation(runerX, runerY,-1);
+        handlePropagation(runerX, runerY, -1);
       }
       isEmpty = theCaze.content(theGrid) == "" || theCaze.isMine;
       runerX += step;
@@ -67,16 +67,19 @@ function App() {
   };
   const handleClickCaze = (offX, OffY) => {
     let actualGrid = state.grid;
+    let clickedCaze = actualGrid[offX][OffY];
     // actualGrid[offX][OffY].isMine = !actualGrid[offX][OffY].isMine;
-    actualGrid[offX][OffY].isVisible = true;
-    // change visible to true for voisins with no content
-    handlePropagation(offX, OffY);
-    handlePropagation(offX, OffY,-1);
-    setState({
-      ...state,
-      grid: [...actualGrid],
-      msg: actualGrid[offX][OffY].isMine ? "boom" : "play",
-    });
+    if (!clickedCaze.isVisible) {
+      clickedCaze.isVisible = true;
+      // change visible to true for voisins with no content
+      handlePropagation(offX, OffY);
+      handlePropagation(offX, OffY, -1);
+      setState({
+        ...state,
+        grid: [...actualGrid],
+        msg: actualGrid[offX][OffY].isMine ? "boom" : "play",
+      });
+    }
   };
   return (
     <div className="App">
@@ -102,7 +105,7 @@ function App() {
                 {index == 0 ? (
                   <>
                     <p key={index} className="gridRow">
-                    <span className="case gridAXES">#</span>
+                      <span className="case gridAXES">#</span>
                       {row.map((caze, cazeIndex) => (
                         <span className="case gridAXES">{cazeIndex}</span>
                       ))}
