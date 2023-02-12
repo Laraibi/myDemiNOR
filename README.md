@@ -13,25 +13,12 @@ You will need to have Node.js and yarn installed on your computer.
 Clone the repository to your local machine:
 
 
-Copy code
-### git clone https://github.com/Laraibi/myDemiNOR
-Change into the project directory:
-
-
-Copy code
-### cd myDemiNOR
-Install the dependencies:
-
-Copy code
-### yarn install
-Running the App
-To start the app, run the following command:
-
-
-Copy code
-### yarn start
-This will start a local development server, and you can view the app in your browser at http://localhost:3000.
-
+````
+git clone https://github.com/Laraibi/myDemiNOR
+cd myDemiNOR
+yarn install
+yarn start
+````
 ## Built With
 React - The JavaScript library used for building user interfaces
 Contributing

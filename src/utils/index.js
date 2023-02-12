@@ -74,3 +74,4 @@ export const getNumber = (grid, x, y) => {
     }
     return theCount > 0 ? theCount : ""
 }
+
