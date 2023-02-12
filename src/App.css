@@ -4,15 +4,17 @@
   align-items: center;
   flex-direction: column;
   margin: 15px;
-  
 }
 
-.gridBox{
+.gridBox {
+  margin-top: 15px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .case {
-
-  background-color:rgb(223, 243, 223) ; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(223, 243, 223);
   border: 1px solid rgb(158, 158, 158);
   width: 30px;
   height: 30px;
@@ -21,10 +23,9 @@
   font-weight: bold;
 }
 
-.case:hover{
+.case:hover {
   cursor: pointer;
-  background-color:rgb(45, 167, 45) ; 
-
+  background-color: rgb(45, 167, 45);
 }
 
 .caseOK {
@@ -37,8 +38,17 @@
 .gridRow {
   display: flex;
   margin: 0;
+  justify-content: center;
+  align-items: center;
 }
 
-.boom{
+.boom {
   font-size: 16px;
+}
+
+.ps {
+  position: absolute;
+  top: 2px;
+  font-size: 24px;
+  left: 680px;
 }
