@@ -14,6 +14,7 @@ function App() {
     grid: [],
     msg: "play",
     start: false,
+    stop: false,
   });
   const buildGrid = (count) => {
     let arr = [];
@@ -40,6 +41,8 @@ function App() {
       ...state,
       grid: setRandomMinesEnglish(arr, count),
       start: true,
+      stop: false,
+      msg:"play"
     });
   };
   const handlePropagation = (startX, startY, step = 1) => {
@@ -66,26 +69,30 @@ function App() {
     setState({ ...state, grid: theGrid });
   };
   const handleClickCaze = (offX, OffY) => {
-    let actualGrid = state.grid;
-    let clickedCaze = actualGrid[offX][OffY];
-    // actualGrid[offX][OffY].isMine = !actualGrid[offX][OffY].isMine;
-    if (!clickedCaze.isVisible) {
+    if (!state.stop) {
+      let actualGrid = state.grid;
+      let clickedCaze = actualGrid[offX][OffY];
       clickedCaze.isVisible = true;
-      // change visible to true for voisins with no content
-      handlePropagation(offX, OffY);
-      handlePropagation(offX, OffY, -1);
       setState({
         ...state,
+        msg: clickedCaze.isMine ? "Booom" : "play",
+        stop: clickedCaze.isMine,
         grid: [...actualGrid],
-        msg: actualGrid[offX][OffY].isMine ? "boom" : "play",
       });
+      // actualGrid[offX][OffY].isMine = !actualGrid[offX][OffY].isMine;
+      // state.stop && return false;
+      if (!clickedCaze.isMine) {
+        // change visible to true for voisins with no content
+        handlePropagation(offX, OffY);
+        handlePropagation(offX, OffY, -1);
+      }
     }
   };
   return (
     <div className="App">
-      <div className="gridBox">
-        {!state.grid.length ? (
-          <>
+      <>
+        {state.stop  || !state.start ? (
+          <div className="gridBox">
             <div className="row">
               {state.levels.map((level, index) => (
                 <button
@@ -97,9 +104,10 @@ function App() {
                 </button>
               ))}
             </div>
-          </>
-        ) : (
-          <>
+          </div>
+        ) : null}
+        {state.grid.length ? (
+          <div className="gridBox">
             {state.grid.map((row, index) => (
               <>
                 {index == 0 ? (
@@ -107,7 +115,9 @@ function App() {
                     <p key={index} className="gridRow">
                       <span className="case gridAXES">#</span>
                       {row.map((caze, cazeIndex) => (
-                        <span className="case gridAXES">{cazeIndex}</span>
+                        <span key={cazeIndex} className="case gridAXES">
+                          {cazeIndex}
+                        </span>
                       ))}
                     </p>
                   </>
@@ -133,12 +143,14 @@ function App() {
                 </p>
               </>
             ))}
-          </>
-        )}
-      </div>
+          </div>
+        ) : null}
+      </>
 
-      <p className="boom">{state.msg}</p>
-      {state.start ? <Timer /> : null}
+      <p className={state.stop ? "msg boomStop" : "msg boomPlay"}>
+        {state.msg}
+      </p>
+      {state.start ? <Timer stop={state.stop} /> : null}
     </div>
   );
 }
