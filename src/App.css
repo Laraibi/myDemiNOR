@@ -66,3 +66,8 @@
   color: rgb(146, 144, 144) !important;
   background-color: rgb(4, 36, 4) !important;
 }
+
+
+tr,td,th{
+  border: solid 1px black;
+}

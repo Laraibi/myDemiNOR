@@ -80,8 +80,8 @@ export const getNumber = (grid, x, y) => {
             square.push(grid[x + 1].slice(y - 1, y + 2))
         }
     }
-    console.log(`squareOF: {x: ${x}, y: ${y}}`)
-    console.log(square)
+    // console.log(`squareOF: {x: ${x}, y: ${y}}`)
+    // console.log(square)
     return theCount > 0 ? theCount : ""
 }
 

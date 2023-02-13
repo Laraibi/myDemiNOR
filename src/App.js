@@ -15,6 +15,8 @@ function App() {
     msg: "play",
     start: false,
     stop: false,
+    resetTime: false,
+    scores: [],
   });
   const buildGrid = (count) => {
     let arr = [];
@@ -42,20 +44,22 @@ function App() {
       grid: setRandomMinesEnglish(arr, count),
       start: true,
       stop: false,
-      msg:"play"
+      msg: "play",
+      resetTime: true,
+      level: state.levels.find((level) => level.mines == count),
     });
   };
   const handlePropagation = (startX, startY, step = 1) => {
-    console.log(`handlePropagation(startX:${startX}, startY:${startY})`);
+    // console.log(`handlePropagation(startX:${startX}, startY:${startY})`);
     let theGrid = state.grid;
     let actualRow = state.grid[startX];
     let isEmpty = false;
     let [runerX, runerY] = [startX, startY + step];
     while (!isEmpty && runerX < theGrid.length && runerY < actualRow.length) {
-      console.log("while");
+      // console.log("while");
       let theCaze = theGrid[runerX][runerY];
-      console.log(`theCaze: ${theCaze}`);
-      console.log(theCaze);
+      // console.log(`theCaze: ${theCaze}`);
+      // console.log(theCaze);
       if (!theCaze.isMine && !theCaze.isVisible) {
         theCaze.isVisible = true;
         handlePropagation(runerX, runerY);
@@ -77,6 +81,7 @@ function App() {
         ...state,
         msg: clickedCaze.isMine ? "Booom" : "play",
         stop: clickedCaze.isMine,
+        resetTime: false,
         grid: [...actualGrid],
       });
       // actualGrid[offX][OffY].isMine = !actualGrid[offX][OffY].isMine;
@@ -88,10 +93,30 @@ function App() {
       }
     }
   };
+  const handleUpdateScores = (seconds) => {
+    console.log(
+      state.grid.flat()
+      // .filter((caze) => caze.isMine)
+    );
+    setState({
+      ...state,
+      scores: [
+        ...state.scores,
+        {
+          level: state.level,
+          openedCount: state.grid.flat().filter((caze) => caze.isVisible).length,
+          seconds,
+          isWin: state.grid.flat()
+            .filter((caze) => caze.isMine)
+            .every((caze) => !caze.isVisible) ? "yes":"no",
+        },
+      ],
+    });
+  };
   return (
     <div className="App">
       <>
-        {state.stop  || !state.start ? (
+        {state.stop || !state.start ? (
           <div className="gridBox">
             <div className="row">
               {state.levels.map((level, index) => (
@@ -132,8 +157,8 @@ function App() {
                         !caze.isVisible
                           ? "case"
                           : caze.isMine
-                          ? "case cazeKO"
-                          : "case caseOK"
+                            ? "case cazeKO"
+                            : "case caseOK"
                       }
                       onClick={() => handleClickCaze(caze.off.x, caze.off.y)}
                     >
@@ -150,7 +175,30 @@ function App() {
       <p className={state.stop ? "msg boomStop" : "msg boomPlay"}>
         {state.msg}
       </p>
-      {state.start ? <Timer stop={state.stop} /> : null}
+      {state.start ? (
+        <Timer stop={state.stop} updateScores={handleUpdateScores} />
+      ) : null}
+
+      <table>
+        <thead>
+          <tr>
+            <th>level</th>
+            <th>openedCount</th>
+            <th>seconds</th>
+            <th>isWin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {state.scores.map((score, index) => (
+            <tr key={index}>
+              <th>{score.level.name}</th>
+              <td>{score.openedCount}</td>
+              <td>{score.seconds}</td>
+              <td>{score.isWin}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
